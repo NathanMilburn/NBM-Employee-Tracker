@@ -47,20 +47,55 @@ const addEmployee = [
             }
         }
     }
-]
+];
 
-module.exports = {startApplication, addEmployee};
+const addRole = [
+    {
+        type: "input",
+        name: "title",
+        message: "What is the name of the role?"
+    },
+    {
+        type: "input",
+        name: "salary",
+        message: "What is the salary for this role?"
+    },
+    {
+        type: "list",
+        name: "department",
+        message: "Which department is this employee in?",
+        choices: async () => {
+            try{
+                const outcome = await db.promise().query('SELECT department_name AS name, id AS value FROM department');
+                return outcome[0];
+            } catch (err) {
+                throw err;
+            }
+        }
+    }
+];
 
-// function selectDepartment() {
-//     inquirer
-//         .prompt([
-//             {
-//                 type: "list",
-//                 name: "select_department",
-//                 message: "What is the name of the department?",
-//                 choices: ["Platform","Human Relations","Sales","Customer Success","Data QA"]
-//             },
-//         ])
-// }
+const addDepartment = [
+    {
+        type: "input",
+        name: "departmentNames",
+        message: "Please add a department."
+    }
+];
 
-// function closeApplication()
+const updateEmployee = [
+    {
+        type: "list",
+        name: "updateEmployee",
+        message: "Which employee's profile would you like to update",
+        choices: async () => {
+            try{
+                const outcome = await db.promise().query('SELECT title AS name, id AS value FROM roles');
+                return outcome[0];
+            } catch (err) {
+                throw err;
+            }
+        }
+    }
+];
+module.exports = {startApplication, addEmployee, addRole, addDepartment, updateEmployee};
