@@ -49,7 +49,7 @@ const addEmployee = [
     }
 ]
 
-
+module.exports = {startApplication, addEmployee};
 
 // function selectDepartment() {
 //     inquirer
