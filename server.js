@@ -1,6 +1,137 @@
-const express = require('express');
-const mysql = require('mysql2');
-const sequelize = require('./config/connection');
+const inquirer = require("inquirer");
+const db = require("./config/connection");
+require("console.table");
 
-const PORT = process.env.PORT || 3001;
-const app = express();
+const {
+  startApplication,
+  addEmployee,
+  addRole,
+  addDepartment,
+  updateEmployee,
+} = require("./prompts/prompt");
+
+const initialPrompt = () => {
+  inquirer.prompt(startApplication).then((response) => {
+    switch (response.options) {
+      case "View All Departments":
+        viewDepartments();
+        break;
+      case "View All Roles":
+        viewRoles();
+        break;
+      case "View All Employees":
+        viewEmployees();
+        break;
+      case "Add a Department":
+        newDepartment();
+        break;
+      case "Add a role":
+        newRole();
+        break;
+      case "Add employee(s)":
+        newEmployee();
+        break;
+      case "Update an Employee's Role":
+        updateRole();
+        break;
+      case "Quit":
+        db.end();
+        break;
+      default:
+        db.end();
+    }
+  });
+};
+
+const viewDepartments = () => {
+  db.query("SELECT * FROM department", (err, res) => {
+    if (err) {
+      console.log(err);
+    } else {
+      console.table(res);
+      initialPrompt();
+    }
+  });
+};
+
+const viewRoles = () => {
+  db.query("SELECT * FROM roles", (err, res) => {
+    err ? console.log(err) : console.table(res);
+    initialPrompt();
+  });
+};
+
+const viewEmployees = () => {
+  db.query("SELECT * FROM employee", (err, res) => {
+    err ? console.log(err) : console.table(res);
+    initialPrompt();
+  });
+};
+
+const newDepartment = () => {
+  inquirer.prompt(addDepartment).then((response) => {
+    db.query(
+      "INSERT INTO department (names) VALUES (?)",
+      response.deptNames,
+      (err, res) => {
+        err
+          ? console.log(err)
+          : console.log(
+              `The ${response.deptNames} department has been added to the database.`
+            );
+        initialPrompt();
+      }
+    );
+  });
+};
+
+const newRole = () => {
+  inquirer.prompt(addRole).then((response) => {
+    db.query(
+      `INSERT INTO roles (title, salary, department_id) VALUES (?, ?, ?)`,
+      [response.title, response.salary, response.department],
+      (err, res) => {
+        err
+          ? console.log(err)
+          : console.log(
+              `The ${response.title} has been added to the database.`
+            );
+        initialPrompt();
+      }
+    );
+  });
+};
+
+const newEmployee = () => {
+  inquirer.prompt(addEmployee).then((response) => {
+    db.query(
+      "INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)",
+      [response.firstName, response.lastName, response.role, response.manager],
+      (err, res) => {
+        err
+          ? console.log(err)
+          : console.log(
+              `${response.firstName} ${response.lastName} has been added to the database.`
+            );
+        initialPrompt();
+      }
+    );
+  });
+};
+
+const updateRole = () => {
+  inquirer.prompt(updateEmployee).then((response) => {
+    db.query(
+      "UPDATE employee SET role_id = ? WHERE id = ?",
+      [response.update, response.newRole],
+      (err, res) => {
+        err
+          ? console.log(err)
+          : console.log("Employee profile has been updated.");
+        initialPrompt();
+      }
+    );
+  });
+};
+
+initialPrompt();

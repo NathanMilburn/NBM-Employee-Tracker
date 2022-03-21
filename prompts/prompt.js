@@ -11,8 +11,9 @@ const startApplication = [
       "View All Employees",
       "Add a Department",
       "Update an Employee Role",
+      "Quit",
     ],
-    default: "View All Department",
+    default: "View All Departments",
   },
 ];
 
