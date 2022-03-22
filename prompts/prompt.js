@@ -10,7 +10,9 @@ const startApplication = [
       "View All Roles",
       "View All Employees",
       "Add a Department",
-      "Update an Employee Role",
+      "Add a Role",
+      "Add an Employee",
+      "Update an Employee's Role",
       "Quit",
     ],
     default: "View All Departments",
@@ -76,12 +78,12 @@ const addRole = [
   {
     type: "list",
     name: "department",
-    message: "Which department is this employee in?",
+    message: "Which department is this role in?",
     choices: async () => {
       try {
         const outcome = await db
           .promise()
-          .query("SELECT department_name AS name, id AS value FROM department");
+          .query("SELECT names AS name, id AS value FROM department");
         return outcome[0];
       } catch (err) {
         throw err;
@@ -98,11 +100,26 @@ const addDepartment = [
   },
 ];
 
-const updateEmployee = [
+const roleUpdate = [
   {
     type: "list",
     name: "updateEmployee",
-    message: "Which employee's profile would you like to update",
+    message: "Which employee's role would you like to update?",
+    choices: async () => {
+      try {
+        const outcome = await db
+          .promise()
+          .query('SELECT CONCAT(first_name, " ", last_name) AS name, id AS value FROM employee');
+        return outcome[0];
+      } catch (err) {
+        throw err;
+      }
+    }
+  },
+  {
+    type: "list",
+    name: "newRole",
+    message: "What is the employee's new role?",
     choices: async () => {
       try {
         const outcome = await db
@@ -121,5 +138,5 @@ module.exports = {
   addEmployee,
   addRole,
   addDepartment,
-  updateEmployee,
+  roleUpdate,
 };

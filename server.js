@@ -7,12 +7,12 @@ const {
   addEmployee,
   addRole,
   addDepartment,
-  updateEmployee,
+  roleUpdate,
 } = require("./prompts/prompt");
 
 const initialPrompt = () => {
   inquirer.prompt(startApplication).then((response) => {
-    switch (response.options) {
+    switch (response.selections) {
       case "View All Departments":
         viewDepartments();
         break;
@@ -25,10 +25,10 @@ const initialPrompt = () => {
       case "Add a Department":
         newDepartment();
         break;
-      case "Add a role":
+      case "Add a Role":
         newRole();
         break;
-      case "Add employee(s)":
+      case "Add an Employee":
         newEmployee();
         break;
       case "Update an Employee's Role":
@@ -72,12 +72,12 @@ const newDepartment = () => {
   inquirer.prompt(addDepartment).then((response) => {
     db.query(
       "INSERT INTO department (names) VALUES (?)",
-      response.deptNames,
+      response.departmentNames,
       (err, res) => {
         err
           ? console.log(err)
           : console.log(
-              `The ${response.deptNames} department has been added to the database.`
+              `The ${response.departmentNames} department has been added to the database.`
             );
         initialPrompt();
       }
@@ -120,7 +120,7 @@ const newEmployee = () => {
 };
 
 const updateRole = () => {
-  inquirer.prompt(updateEmployee).then((response) => {
+  inquirer.prompt(roleUpdate).then((response) => {
     db.query(
       "UPDATE employee SET role_id = ? WHERE id = ?",
       [response.update, response.newRole],
